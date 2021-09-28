@@ -6,20 +6,17 @@ import User from "../model/user.model";
 class UserRepository {
 
     async obterTodos() : Promise<User[]> {
-        // try {
-            const query = "SELECT id, username FROM application_user";
-            const result = await pool.query(query);
-            return result;
-        // } catch(error: Exception) {
-
-        // }
+        const query = "SELECT id, username FROM application_user";
+        const result = await pool.query(query);
+        return result;
     }
 
     async obterComId(id: string) : Promise<User> {
         try {
             const query = "SELECT id, username FROM application_user WHERE id = ?";
-            const result = await pool.query(query, [id]);
-            return result;
+            const rows = await pool.query(query, [id]);
+            const [user] = rows;
+            return user || null;
         } catch(error) {
             throw new DatabaseError("Erro na consulta por ID", error);
         }
@@ -43,6 +40,18 @@ class UserRepository {
         const query = "DELETE FROM application_user WHERE id = ?";
         const result = await pool.query(query, [id]);
     }
+
+    async obterComUsernameEPassword(username: string, password: string) : Promise<User|null> {
+        try {
+            const query = "SELECT id, username FROM application_user WHERE username = ? AND password = ?";
+            const rows = await pool.query(query, [username, password]);
+            const [user] = rows;
+            return user || null;
+        } catch(error) {
+            throw new DatabaseError("Erro na consulta de usuario com username e password", error);
+        }
+    }
+
 }
 
 export default new UserRepository();
