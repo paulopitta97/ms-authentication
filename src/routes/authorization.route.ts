@@ -4,6 +4,7 @@ import ForbiddenError from "../model/errors/forbidden.error.model";
 import userRepository from "../repositories/users.repository";
 import JWT from 'jsonwebtoken';
 import basicAuthenticationMiddleware from "../middlewares/basic-authentication.middleware";
+import jwtAuthenticationMiddleware from "../middlewares/jwt-authentication.middleware";
 
 const authorizationRoute = Router();
 
@@ -32,6 +33,11 @@ authorizationRoute.post('/token', basicAuthenticationMiddleware, async (req: Req
     } catch(error) {
         next(error);
     }
+});
+
+authorizationRoute.post('/token/validate', jwtAuthenticationMiddleware, async (req: Request, res: Response, next: NextFunction) => {
+    // como passou pelo middleware acima, logo o token está valido.
+    res.status(StatusCodes.OK);
 });
 
 export default authorizationRoute;
